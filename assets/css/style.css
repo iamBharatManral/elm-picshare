@@ -1,0 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 2rem;
+}
+.header {
+    padding: 3rem;
+    font-size: 3rem;
+    text-align: center;
+}
+.content-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+.detailed-photo{
+    padding: 1em;
+    background-color: #d1d5d9;
+    width: 40%;
+}
+.detailed-photo img {
+    width: 100%;
+}
+
+
+
