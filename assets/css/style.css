@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Philosopher:wght@400;700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
@@ -6,25 +9,72 @@
 
 body {
     margin: 2rem;
+    font-family: 'Caveat', cursive;
 }
+
 .header {
     padding: 3rem;
     font-size: 3rem;
     text-align: center;
 }
+
 .content-flow {
     display: flex;
     flex-direction: column;
     gap: 2rem;
 }
-.detailed-photo{
+
+.detailed-photo {
     padding: 1em;
     background-color: #d1d5d9;
     width: 40%;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    margin: 0 auto;
+    border-radius: 10px;
 }
+
 .detailed-photo img {
     width: 100%;
+    border-radius: 10px;
 }
 
+.fa {
+    cursor: pointer;
+    margin-bottom: 10px;
+}
 
+.fa-heart {
+    color: red;
+}
 
+ul, li {
+    list-style: none;
+}
+
+.comments-info, .photo-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8em;
+    font-family: 'Philosopher', sans-serif;
+}
+
+.new-comment {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid white;
+    padding-top: 1em;
+}
+
+.new-comment input, button {
+    border: none;
+    outline: none;
+    background: transparent;
+}
+
+button {
+    color: blue;
+    font-size: 1rem;
+    cursor: pointer;
+}
