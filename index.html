@@ -10,9 +10,18 @@
 <body>
 <div id="app"></div>
 <script>
-    Elm.Picshare.init({
-        node: document.querySelector("#app")
-    })
+    (function(){
+        const app = Elm.Picshare.init({
+            node: document.querySelector("#app")
+        })
+        app.ports.listen.subscribe(listen);
+        function listen(url){
+            const socket = new WebSocket(url)
+            socket.onmessage = function(event){
+                app.ports.receive.send(event.data)
+            }
+        }
+    })()
 </script>
 </body>
 </html>

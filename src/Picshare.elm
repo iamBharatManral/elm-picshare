@@ -5,8 +5,14 @@ import Html exposing (..)
 import Html.Attributes exposing (class, disabled, placeholder, src, type_, value)
 import Html.Events exposing (onClick, onInput, onSubmit)
 import Http
-import Json.Decode exposing (Decoder, bool, int, list, string, succeed)
+import Json.Decode exposing (Decoder, bool, decodeString, int, list, string, succeed)
 import Json.Decode.Pipeline exposing (hardcoded, required)
+import WebSocket
+
+
+wsUrl : String
+wsUrl =
+    "wss://programming-elm.com/"
 
 
 baseUrl : String
@@ -23,6 +29,8 @@ type Msg
     | UpdateComment Id String
     | SaveComment Id
     | LoadFeed (Result Http.Error Feed)
+    | LoadStreamPhoto (Result Json.Decode.Error Photo)
+    | FlushStreamQueue
 
 
 type alias Id =
@@ -36,6 +44,7 @@ type alias Photo =
 type alias Model =
     { feed : Maybe Feed
     , error : Maybe Http.Error
+    , streamQueue : Feed
     }
 
 
@@ -51,7 +60,7 @@ photoDecoder =
 
 
 initialModel =
-    { feed = Nothing, error = Nothing }
+    { feed = Nothing, error = Nothing, streamQueue = [] }
 
 
 fetchFeed : Cmd Msg
@@ -195,7 +204,10 @@ viewContent model =
             div [ class "feed-error" ] [ text (errorMessage error) ]
 
         Nothing ->
-            viewFeed model.feed
+            div []
+                [ viewStreamNotification model.streamQueue
+                , viewFeed model.feed
+                ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -211,10 +223,35 @@ update msg model =
             ( { model | feed = updateFeed saveNewComment id model.feed }, Cmd.none )
 
         LoadFeed (Ok feed) ->
-            ( { model | feed = Just feed }, Cmd.none )
+            ( { model | feed = Just feed }, WebSocket.listen wsUrl )
 
         LoadFeed (Err error) ->
             ( { model | error = Just error }, Cmd.none )
+
+        LoadStreamPhoto (Ok photo) ->
+            ( { model | streamQueue = photo :: model.streamQueue }, Cmd.none )
+
+        LoadStreamPhoto (Err _) ->
+            ( model, Cmd.none )
+
+        FlushStreamQueue ->
+            ( { model | feed = Maybe.map ((++) model.streamQueue) model.feed, streamQueue = [] }
+            , Cmd.none
+            )
+
+
+viewStreamNotification : Feed -> Html Msg
+viewStreamNotification queue =
+    case queue of
+        [] ->
+            text ""
+
+        _ ->
+            let
+                content =
+                    "View new photos: " ++ String.fromInt (List.length queue)
+            in
+            div [ class "stream-notification", onClick FlushStreamQueue ] [ text content ]
 
 
 viewFeedPlaceholder : Int -> Html Msg
@@ -251,8 +288,8 @@ init () =
 
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.none
+subscriptions _ =
+    WebSocket.receive (LoadStreamPhoto << decodeString photoDecoder)
 
 
 main =
