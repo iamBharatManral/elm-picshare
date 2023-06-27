@@ -153,6 +153,10 @@ button:hover {
     background-color: blanchedalmond;
 }
 
+footer {
+    float: right;
+}
+
 @keyframes blink {
     to {
         background-color: #8ab9e7;
